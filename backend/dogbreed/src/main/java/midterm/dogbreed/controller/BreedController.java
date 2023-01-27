@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/breeds")
+@CrossOrigin
 public class BreedController {
 
     @Autowired
