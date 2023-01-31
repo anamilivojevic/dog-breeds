@@ -1,6 +1,8 @@
 const cardContainer = document.getElementById("card-container");
 const searchBtn = document.getElementById("search-button");
-const searchInput = document.getElementById("search-input");
+let searchInputValue = document.getElementById("search-input").value;
+const logoHomeBtn = document.getElementById("logo-home");
+const searchResultText = document.getElementById("search-results-text");
 const BASE_URL = "http://localhost:8080/api/breeds";
 
 const makeCard = (breed) => {
@@ -9,7 +11,7 @@ const makeCard = (breed) => {
                 <img src="${breed.imageUrl}" class="card-img-top" alt="Image of a ${breed.name}" />
                 <div class="card-body mt-3 d-flex flex-column justify-content-between">
                     <div class="mb-3">
-                  <h5 class="card-title fs-4 mb-3">Card title</h5>
+                  <h5 class="card-title fs-4 mb-3">${breed.name}</h5>
                   <p class="card-text">
                     ${breed.description}
                   </p></div>
@@ -54,7 +56,8 @@ const makeCards = (breedsList) => {
   cardContainer.innerHTML = content;
 };
 
-const getCards = async () => {
+const getAllBreeds = async () => {
+  searchResultText.innerHTML = "";
   try {
     const response = await fetch(BASE_URL);
     console.log(response);
@@ -71,12 +74,13 @@ const getCards = async () => {
 
 const getBreedsFromSearch = async () => {
   try {
-    const response = await fetch(BASE_URL + "?search=" + searchInput.value);
+    const response = await fetch(BASE_URL + "?search=" + searchInputValue);
     console.log(response);
     if (response.ok) {
       const breeds = await response.json();
+      searchResultText.innerHTML = `Search results for "${searchInputValue}"`;
       makeCards(breeds);
-      searchInput.value = "";
+      searchInputValue = "";
     } else {
       console.log(response.status);
     }
@@ -88,7 +92,13 @@ const getBreedsFromSearch = async () => {
 // adding event listeners
 searchBtn.addEventListener("click", (event) => {
   event.preventDefault();
-  getBreedsFromSearch();
+  if (searchInputValue != "") {
+    getBreedsFromSearch();
+  }
 });
 
-getCards();
+logoHomeBtn.addEventListener("click", (event) => {
+  event.preventDefault();
+});
+
+getAllBreeds();
