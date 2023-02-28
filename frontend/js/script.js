@@ -1,6 +1,6 @@
 const cardContainer = document.getElementById("card-container");
 const searchBtn = document.getElementById("search-button");
-let searchInputValue = document.getElementById("search-input").value;
+let searchInput = document.getElementById("search-input");
 const logoHomeBtn = document.getElementById("logo-home");
 const searchResultText = document.getElementById("search-results-text");
 const BASE_URL = "http://localhost:8080/api/breeds";
@@ -44,7 +44,6 @@ const makeCard = (breed) => {
   return cardContent;
 };
 
-// functions for REST services
 const makeCards = (breedsList) => {
   let content = "<div class='row' >";
 
@@ -56,10 +55,12 @@ const makeCards = (breedsList) => {
   cardContainer.innerHTML = content;
 };
 
-const getAllBreeds = async () => {
-  searchResultText.innerHTML = "";
+
+// functions for REST services
+
+const getAPI = async(searchString) => {
   try {
-    const response = await fetch(BASE_URL);
+    const response = await fetch(BASE_URL + searchString);
     console.log(response);
     if (response.ok) {
       const breeds = await response.json();
@@ -70,29 +71,23 @@ const getAllBreeds = async () => {
   } catch (error) {
     console.log(error);
   }
+}
+
+const getAllBreeds = async () => {
+  searchResultText.innerHTML = "";
+  await getAPI("");
 };
 
 const getBreedsFromSearch = async () => {
-  try {
-    const response = await fetch(BASE_URL + "?search=" + searchInputValue);
-    console.log(response);
-    if (response.ok) {
-      const breeds = await response.json();
-      searchResultText.innerHTML = `Search results for "${searchInputValue}"`;
-      makeCards(breeds);
-      searchInputValue = "";
-    } else {
-      console.log(response.status);
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  await getAPI("?search=" + searchInput.value);
+  searchResultText.innerHTML = `Search results for "${searchInput.value}"`;
+  searchInput.value = "";
 };
 
 // adding event listeners
 searchBtn.addEventListener("click", (event) => {
   event.preventDefault();
-  if (searchInputValue != "") {
+  if (searchInput.value != "") {
     getBreedsFromSearch();
   }
 });
